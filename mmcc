@@ -1,4 +1,4 @@
-cd  /home/hapax/Documents/Projects/MastersThesis/latex/
-pdflatex -interaction=nonstopmode Tesis.tex
+cd /home/hapax/Documents/Projects/MastersThesis/latex/
+./compile.sh
 
 
