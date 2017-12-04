@@ -89,7 +89,11 @@ alias sb="sudo blackman"
 alias b="blackman"
 alias sl="ls -la"
 alias here="thunar . &"
+alias ethpk="echo 021b9155eaa9b5f7ae14a5ebb0a6f1ce2a36484b759d71b2d909fd8060c83b9e | xclip -selection c"
+alias ethaddress="echo 0xbB49cd914B515B2050080440b9B7Ee86DBfD22cC | 
+xclip -selection c"
 alias cdp="cd ~/Documents/Projects"
+alias cdpm="cd ~/Documents/Projects/MastersThesis"
 alias idhere="idea . &"
 alias pantallas="autorandr.sh --change ucm"
 alias list="ls -lahtr --group-directories-first --time-style=+\"%d/%m %H:%M\" --color=yes -F"
@@ -103,3 +107,4 @@ if [[ ! -d $ZSH_CACHE_DIR ]]; then
 fi
 
 source $ZSH/oh-my-zsh.sh
+#test
