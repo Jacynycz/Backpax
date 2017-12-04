@@ -45,7 +45,7 @@ values."
      org
      erlang
      pdf-tools
-     verilog-mode
+     ;;verilog-mode
      latex
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -63,6 +63,7 @@ values."
                                       flycheck
                                       solidity-mode
                                       flyspell
+                                      verilog-mode
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -324,6 +325,8 @@ you should place your code here."
   (global-set-key (kbd "<M-mouse-5>") 'text-scale-decrease)
   (menu-bar-mode 1)
   (setq reftex-default-bibliography '("/home/hapax/Documents/Projects/MastersThesis/latex/latex.bib"))
+  (global-set-key (kbd "C-M-x") 'LaTeX-fill-buffer)
+
   (global-set-key
    (kbd "C-M-z")
    (lambda()

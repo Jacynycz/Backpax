@@ -281,6 +281,18 @@ mode "resize" {
         bindsym Escape mode "default"
 }
 
+set $displayMode "Set display mode [w]ork [l]aptop"
+bindsym $mod+p mode $displayMode
+mode $displayMode {
+    bindsym w exec "autorandr.sh -l ucm"; \
+                mode "default"
+    bindsym l exec "autorandr.sh -l laptop"; \
+                mode "default"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
 # Lock screen
 bindsym $mod+9 exec --no-startup-id blurlock
 
