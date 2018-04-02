@@ -13,9 +13,6 @@ values."
    dotspacemacs-distribution 'spacemacs
    ;; Lazy installation of layers (i.e. layers are installed only when a file
    ;; with a supported type is opened). Possible values are `all', `unused'
-   ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
-   ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
-   ;; lazy install any layer that support lazy installation even the layers
    ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.turn
@@ -31,6 +28,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -44,6 +42,8 @@ values."
      markdown
      org
      erlang
+     javascript-jscs
+     python
      pdf-tools
      ;;verilog-mode
      latex
@@ -100,7 +100,7 @@ values."
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
    ;; whenever you start Emacs. (default nil)
-   dotspacemacs-check-for-update nil
+   dotspacemacs-check-for-update 'master
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
    ;; to `emacs-version'.
@@ -142,7 +142,7 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
+   dotspacemacs-default-font '("DejaVu Sans Condensed"
                                :size 13
                                :weight normal
                                :width normal
@@ -269,7 +269,7 @@ values."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers 't
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -319,23 +319,57 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (global-set-key (kbd "C-ç") 'undo)
-  (global-set-key (kbd "C-+") 'undo-tree-redo)
+  (define-key evil-emacs-state-map (kbd "C-z") nil)
   (global-set-key (kbd "<M-mouse-4>") 'text-scale-increase)
   (global-set-key (kbd "<M-mouse-5>") 'text-scale-decrease)
+  (global-set-key (kbd "M--")
+        (lambda()
+        (interactive)
+        (insert " -> ")
+        ))
+  (cua-mode t)
+  (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
+  (transient-mark-mode 1) ;; No region when it is not highlighted
+  (setq cua-keep-region-after-copy t) ;; Standard Windows behaviour
   (menu-bar-mode 1)
   (setq reftex-default-bibliography '("/home/hapax/Documents/Projects/MastersThesis/latex/latex.bib"))
-  (global-set-key (kbd "C-M-x") 'LaTeX-fill-buffer)
-
+  ;;(global-set-key (kbd "C-M-x") 'LaTeX-fill-buffer)
+  ;;(spacemacs/set-font "DejaVu Sans Condensed" 12)
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-set-key (kbd "C-M-f") 'LaTeX-fill-buffer)
+                               ))
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (local-set-key (kbd "<C-return>") 'TeX-insert-macro)
+                               ))
+  (define-key cua-global-keymap [C-return] nil)
+  (global-set-key (kbd "C-S-u") 'uncomment-region)
+  (global-set-key (kbd "C-S-i") 'comment-region)
   (global-set-key
    (kbd "C-M-z")
    (lambda()
      (interactive)
      (save-buffer)
-     (flyspell-buffer)
+     ;;(flyspell-buffer)
      (with-temp-buffer
-       (shell-command "mmcc" t))
+       (shell-command "./compile.sh" t))
      (message "Saving and compiling")))
+
+  (defvar my-keys-minor-mode-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "C-z") 'undo)
+      (define-key map (kbd "C-y")  'undo-tree-redo)
+      (define-key map (kbd "C-s")  'save-buffer)
+     ;; (define-key map (kbd "<C-return>") 'TeX-insert-macro)
+      (define-key map (kbd "C-M-x") 'LaTeX-fill-buffer)
+      map)
+    "my-keys-minor-mode keymap.")
+
+  (define-minor-mode my-keys-minor-mode
+    "A minor mode so that my key settings override annoying major modes."
+    :init-value t
+    :lighter " my-keys")
+
+  (my-keys-minor-mode 1)
  )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -402,7 +436,7 @@ you should place your code here."
  '(column-number-mode t)
  '(package-selected-packages
    (quote
-    (company-auctex auctex-latexmk auctex flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip auto-dictionary flycheck solidity-mode el-get pdf-tools tablist smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit with-editor erlang company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+    (yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode dash-functional helm-pydoc cython-mode company-anaconda anaconda-mode pythonic web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data company-auctex auctex-latexmk auctex flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip auto-dictionary flycheck solidity-mode el-get pdf-tools tablist smeargle orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-download mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy evil-magit magit magit-popup git-commit with-editor erlang company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
  '(reftex-default-bibliography
    (quote
     ("/home/hapax/Documents/Projects/MastersThesis/latex/latex.bib")))
@@ -416,4 +450,4 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:family "DejaVu Sans" :foundry "PfEd" :slant normal :weight normal :height 113 :width normal)))))

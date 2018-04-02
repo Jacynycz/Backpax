@@ -1,1 +1,1 @@
-exec /usr/bin/rofi -combi-modi window,drun -show combi -modi combi   
+exec /usr/bin/rofi -combi-modi drun -show combi -modi combi   

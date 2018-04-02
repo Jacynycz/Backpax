@@ -38,7 +38,7 @@ bindsym $mod+d exec --no-startup-id dmenu_recency
 # start program launcher
 bindsym $mod+space exec --no-startup-id /home/hapax/.i3/rofi_window.sh
 
-bindsym $mod+Tab exec --no-startup-id /home/hapax/.i3/rofi_window.sh
+bindsym $mod+Tab exec --no-startup-id /home/hapax/.i3/rofi_win.sh
 bindsym $mod+t exec --no-startup-id /home/hapax/.i3/rofi_task.sh
 bindsym $mod+l exec /home/hapax/.i3/rofi_find.sh
 
@@ -117,7 +117,7 @@ bindsym $mod+Shift+b move container to workspace back_and_forth; workspace back_
 # split orientation
 bindsym $mod+h split h;exec notify-send 'tile horizontally'
 bindsym $mod+v split v;exec notify-send 'tile vertically'
-bindsym $mod+q split toggle
+bindsym $mod+Ctrl+d split toggle notify-send 'change tiling'
 
 # toggle fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
@@ -281,14 +281,15 @@ mode "resize" {
         bindsym Escape mode "default"
 }
 
-set $displayMode "Set display mode [w]ork [l]aptop"
+set $displayMode "Set display mode [w]ork [l]aptop [m]irror"
 bindsym $mod+p mode $displayMode
 mode $displayMode {
     bindsym w exec "autorandr.sh -l ucm"; \
                 mode "default"
     bindsym l exec "autorandr.sh -l laptop"; \
                 mode "default"
-
+    bindsym m exec "autorandr.sh -l mirror"; \
+		mode "default"
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
@@ -299,7 +300,7 @@ bindsym $mod+9 exec --no-startup-id blurlock
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nitrogen --restore; sleep 1; compton -b
-#exec --no-startup-id manjaro-hello
+exec --no-startup-id manjaro-hello
 exec --no-startup-id nm-applet
 exec --no-startup-id xfce4-power-manager
 exec --no-startup-id pamac-tray
